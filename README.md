@@ -1,4 +1,7 @@
 # consent-history-api
+
+[![Build](https://github.com/Consent-Management-Platform/consent-history-api/actions/workflows/test.yml/badge.svg)](https://github.com/Consent-Management-Platform/consent-history-api/actions/workflows/test.yml)
+
 This package defines service code for the Consent History API.
 
 See [API models here](https://github.com/Consent-Management-Platform/consent-history-api-models).

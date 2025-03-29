@@ -1,5 +1,5 @@
 # This GitHub workflow will automatically build and test code changes
-name: Gradle build
+name: Build
 on:
   # Run when pushing code or config changes to GitHub
   push:
