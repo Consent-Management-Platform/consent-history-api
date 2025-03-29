@@ -19,4 +19,3 @@ plugins {
 }
 
 rootProject.name = "consent-history-api"
-include("app")
