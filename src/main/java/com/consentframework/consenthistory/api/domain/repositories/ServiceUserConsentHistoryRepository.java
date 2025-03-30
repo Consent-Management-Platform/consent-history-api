@@ -1,6 +1,7 @@
 package com.consentframework.consenthistory.api.domain.repositories;
 
 import com.consentframework.consenthistory.api.models.ConsentChangeEvent;
+import com.consentframework.shared.api.domain.exceptions.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -15,5 +16,6 @@ public interface ServiceUserConsentHistoryRepository {
      * @param userId user identifier
      * @param consentId consent ID, specific to the service-user pair
      */
-    List<ConsentChangeEvent> getConsentHistory(final String serviceId, final String userId, final String consentId);
+    List<ConsentChangeEvent> getConsentHistory(final String serviceId, final String userId, final String consentId)
+        throws ResourceNotFoundException;
 }
