@@ -10,6 +10,13 @@ repositories {
     mavenCentral()
     repositories {
         maven {
+            url = uri("https://maven.pkg.github.com/Consent-Management-Platform/consent-api-java-common")
+            credentials {
+                username = project.findProperty("gpr.usr") as String? ?: System.getenv("GITHUB_USERNAME")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+        maven {
             url = uri("https://maven.pkg.github.com/Consent-Management-Platform/consent-history-api-models")
             credentials {
                 username = project.findProperty("gpr.usr") as String? ?: System.getenv("GITHUB_USERNAME")
@@ -37,6 +44,9 @@ dependencies {
 
     // Consent history API models
     implementation("com.consentframework.consenthistory:consenthistory-api-models:0.1.0")
+
+    // Common Consent Framework API Java libraries
+    implementation("com.consentframework:api-java-common:0.0.6")
 
     // Immutables
     val immutablesDependency = "org.immutables:value:2.10.1"
