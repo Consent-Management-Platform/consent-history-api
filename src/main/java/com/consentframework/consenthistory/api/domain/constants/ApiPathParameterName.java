@@ -26,8 +26,6 @@ public enum ApiPathParameterName {
     }
 
     // Required path parameters for /consents/{consentId} APIs, eg. get consent history
-    public static final List<String> CONSENT_PATH_PARAM_NAMES = List.of(SERVICE_ID, USER_ID, CONSENT_ID)
-        .stream()
-        .map(ApiPathParameterName::getValue)
-        .toList();
+    public static final List<String> CONSENT_PATH_PARAM_NAMES = List.of(
+        SERVICE_ID.getValue(), USER_ID.getValue(), CONSENT_ID.getValue());
 }
