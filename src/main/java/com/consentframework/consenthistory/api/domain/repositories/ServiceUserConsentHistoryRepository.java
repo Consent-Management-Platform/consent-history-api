@@ -9,7 +9,7 @@ import java.util.List;
  * Defines supported integrations with service user consent history records.
  */
 public interface ServiceUserConsentHistoryRepository {
-    public static final String CONSENT_NOT_FOUND_MESSAGE = "No consent found with serviceId: %s, userId: %s, consentId: %s";
+    public static final String CONSENT_NOT_FOUND_MESSAGE = "No consent history found for serviceId: %s, userId: %s, consentId: %s";
 
     /**
      * Retrieve history for a given service user consent.
