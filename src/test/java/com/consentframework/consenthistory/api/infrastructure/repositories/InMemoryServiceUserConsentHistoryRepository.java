@@ -33,11 +33,6 @@ public class InMemoryServiceUserConsentHistoryRepository implements ServiceUserC
     public List<ConsentChangeEvent> getConsentHistory(String serviceId, String userId, String consentId)
             throws ResourceNotFoundException {
         final String partitionKey = getPartitionKey(serviceId, userId, consentId);
-        if (!consentHistoryStore.containsKey(partitionKey)) {
-            final String notFoundMessage = String.format(ServiceUserConsentHistoryRepository.CONSENT_NOT_FOUND_MESSAGE,
-                serviceId, userId, consentId);
-            throw new ResourceNotFoundException(notFoundMessage);
-        }
         return consentHistoryStore.get(partitionKey);
     }
 
@@ -68,7 +63,7 @@ public class InMemoryServiceUserConsentHistoryRepository implements ServiceUserC
      * @param userId user identifier
      * @param consentId consent ID, specific to the service-user pair
      */
-    public String getPartitionKey(String serviceId, String userId, String consentId) {
+    public static String getPartitionKey(String serviceId, String userId, String consentId) {
         return String.format("%s|%s|%s", serviceId, userId, consentId);
     }
 }

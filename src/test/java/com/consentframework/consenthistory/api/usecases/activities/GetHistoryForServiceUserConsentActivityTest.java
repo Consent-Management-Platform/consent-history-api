@@ -1,21 +1,17 @@
 package com.consentframework.consenthistory.api.usecases.activities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.consentframework.consenthistory.api.domain.repositories.ServiceUserConsentHistoryRepository;
 import com.consentframework.consenthistory.api.infrastructure.repositories.InMemoryServiceUserConsentHistoryRepository;
 import com.consentframework.consenthistory.api.models.ConsentChangeEvent;
-import com.consentframework.consenthistory.api.models.ConsentEventType;
 import com.consentframework.consenthistory.api.models.GetHistoryForServiceUserConsentResponseContent;
 import com.consentframework.consenthistory.api.testcommon.constants.TestConstants;
-import com.consentframework.shared.api.domain.exceptions.ResourceNotFoundException;
+import com.consentframework.consenthistory.api.testcommon.utils.ConsentChangeEventGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.UUID;
 
 class GetHistoryForServiceUserConsentActivityTest {
     private InMemoryServiceUserConsentHistoryRepository consentHistoryRepository;
@@ -28,22 +24,19 @@ class GetHistoryForServiceUserConsentActivityTest {
     }
 
     @Test
-    void testRetrieveNonExistingConsent() {
-        final ResourceNotFoundException thrownException = assertThrows(ResourceNotFoundException.class, () ->
-            activity.handleRequest(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID));
-
-        final String expectedErrorMessage = String.format(ServiceUserConsentHistoryRepository.CONSENT_NOT_FOUND_MESSAGE,
+    void testRetrieveNonExistingConsent() throws Exception {
+        final GetHistoryForServiceUserConsentResponseContent response = activity.handleRequest(
             TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID);
-        assertEquals(expectedErrorMessage, thrownException.getMessage());
+        assertNull(response.getData());
     }
 
     @Test
     void testRetrieveHistoryForExistingConsent() throws Exception {
-        final ConsentChangeEvent consentChangeEvent1 = createConsentChangeEvent();
+        final ConsentChangeEvent consentChangeEvent1 = ConsentChangeEventGenerator.generate();
         consentHistoryRepository.addConsentHistoryRecord(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID,
             TestConstants.TEST_CONSENT_ID, consentChangeEvent1);
 
-        final ConsentChangeEvent consentChangeEvent2 = createConsentChangeEvent();
+        final ConsentChangeEvent consentChangeEvent2 = ConsentChangeEventGenerator.generate();
         consentHistoryRepository.addConsentHistoryRecord(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID,
             TestConstants.TEST_CONSENT_ID, consentChangeEvent2);
 
@@ -53,15 +46,5 @@ class GetHistoryForServiceUserConsentActivityTest {
         assertEquals(2, consentHistory.size());
         assertEquals(consentChangeEvent1, consentHistory.get(0));
         assertEquals(consentChangeEvent2, consentHistory.get(1));
-    }
-
-    private ConsentChangeEvent createConsentChangeEvent() {
-        final String partitionKey = consentHistoryRepository.getPartitionKey(
-            TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID);
-        return new ConsentChangeEvent()
-            .consentId(partitionKey)
-            .eventId(UUID.randomUUID().toString())
-            .eventTime(OffsetDateTime.now())
-            .eventType(ConsentEventType.MODIFY);
     }
 }
