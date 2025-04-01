@@ -17,11 +17,20 @@ public final class ConsentChangeEventGenerator {
      * Generates a ConsentChangeEvent with default values.
      */
     public static ConsentChangeEvent generate() {
+        return generate(UUID.randomUUID().toString());
+    }
+
+    /**
+     * Generates a ConsentChangeEvent with default values and a specific eventId.
+     *
+     * @param eventId the event ID
+     */
+    public static ConsentChangeEvent generate(final String eventId) {
         final String partitionKey = InMemoryServiceUserConsentHistoryRepository.getPartitionKey(
             TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID);
         return new ConsentChangeEvent()
             .consentId(partitionKey)
-            .eventId(UUID.randomUUID().toString())
+            .eventId(eventId)
             .eventTime(OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC))
             .eventType(ConsentEventType.MODIFY);
     }
