@@ -1,9 +1,10 @@
 package com.consentframework.consenthistory.api.infrastructure.entities;
 
+import com.consentframework.consenthistory.api.infrastructure.mappers.DynamoDbAttributeValueMapConverter;
 import com.consentframework.shared.api.infrastructure.annotations.DynamoDbImmutableStyle;
 import jakarta.annotation.Nullable;
 import org.immutables.value.Value.Immutable;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbConvertedBy;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbImmutable;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
@@ -41,11 +42,11 @@ public interface DynamoDbServiceUserConsentHistoryRecord {
 
     String eventType();
 
-    @DynamoDbAttribute("oldImage")
+    @DynamoDbConvertedBy(DynamoDbAttributeValueMapConverter.class)
     @Nullable
     Map<String, AttributeValue> oldImage();
 
-    @DynamoDbAttribute("newImage")
+    @DynamoDbConvertedBy(DynamoDbAttributeValueMapConverter.class)
     @Nullable
     Map<String, AttributeValue> newImage();
 }
