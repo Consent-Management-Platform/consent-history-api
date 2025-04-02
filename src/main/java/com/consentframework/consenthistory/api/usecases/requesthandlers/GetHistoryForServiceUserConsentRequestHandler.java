@@ -62,6 +62,7 @@ public class GetHistoryForServiceUserConsentRequestHandler extends ApiRequestHan
             activityResponse = activity.handleRequest(serviceId, userId, consentId);
             final List<ConsentChangeEvent> consentHistory = activityResponse.getData();
             if (consentHistory == null || consentHistory.isEmpty()) {
+                logger.info("GetHistoryForServiceUserConsentActivity.handleRequest response has no data: {}", activityResponse);
                 final String errorMessage = String.format(ServiceUserConsentHistoryRepository.CONSENT_NOT_FOUND_MESSAGE,
                     serviceId, userId, consentId);
                 return logAndBuildErrorResponse(new ResourceNotFoundException(errorMessage));
@@ -70,6 +71,7 @@ public class GetHistoryForServiceUserConsentRequestHandler extends ApiRequestHan
                 .data(consentHistory);
             responseBodyString = toJsonString(objectMapper, responseContent);
         } catch (final InternalServiceException | JsonProcessingException | ResourceNotFoundException exception) {
+            logger.warn("GetHistoryForServiceUserConsentRequestHandler handling exception {}", exception);
             return logAndBuildErrorResponse(exception);
         }
 
