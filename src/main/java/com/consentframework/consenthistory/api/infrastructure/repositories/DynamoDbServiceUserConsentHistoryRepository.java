@@ -44,9 +44,6 @@ public class DynamoDbServiceUserConsentHistoryRepository implements ServiceUserC
     public List<ConsentChangeEvent> getConsentHistory(String serviceId, String userId, String consentId)
             throws ResourceNotFoundException {
         final QueryEnhancedRequest queryRequest = buildGetConsentHistoryQueryRequest(serviceId, userId, consentId);
-        logger.info("Querying the ConsentHistory DDB table with query request: {}, query conditional {}",
-            queryRequest, queryRequest.queryConditional());
-
         final PageIterable<DynamoDbServiceUserConsentHistoryRecord> queryResults = consentHistoryTable.query(queryRequest);
         if (queryResults == null) {
             logger.warn("consentHistoryTable.query returned null for serviceId: {}, userId: {}, consentId: {}",
@@ -73,8 +70,8 @@ public class DynamoDbServiceUserConsentHistoryRepository implements ServiceUserC
 
         final Key queryKey = Key.builder()
             .partitionValue(partitionKey)
-            .sortValue(serviceId)
             .build();
+        logger.info("Built DDB query Key with partitionValue {}", partitionKey);
 
         return QueryEnhancedRequest.builder()
             .queryConditional(QueryConditional.keyEqualTo(queryKey))
