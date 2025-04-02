@@ -33,7 +33,13 @@ public class InMemoryServiceUserConsentHistoryRepository implements ServiceUserC
     public List<ConsentChangeEvent> getConsentHistory(String serviceId, String userId, String consentId)
             throws ResourceNotFoundException {
         final String partitionKey = getPartitionKey(serviceId, userId, consentId);
-        return consentHistoryStore.get(partitionKey);
+        final List<ConsentChangeEvent> consentHistory = consentHistoryStore.get(partitionKey);
+        if (consentHistory == null || consentHistory.isEmpty()) {
+            final String errorMessage = String.format(ServiceUserConsentHistoryRepository.CONSENT_NOT_FOUND_MESSAGE,
+                serviceId, userId, consentId);
+            throw new ResourceNotFoundException(errorMessage);
+        }
+        return consentHistory;
     }
 
     /**

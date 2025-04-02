@@ -1,13 +1,15 @@
 package com.consentframework.consenthistory.api.usecases.activities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.consentframework.consenthistory.api.domain.repositories.ServiceUserConsentHistoryRepository;
 import com.consentframework.consenthistory.api.infrastructure.repositories.InMemoryServiceUserConsentHistoryRepository;
 import com.consentframework.consenthistory.api.models.ConsentChangeEvent;
 import com.consentframework.consenthistory.api.models.GetHistoryForServiceUserConsentResponseContent;
 import com.consentframework.consenthistory.api.testcommon.constants.TestConstants;
 import com.consentframework.consenthistory.api.testcommon.utils.ConsentChangeEventGenerator;
+import com.consentframework.shared.api.domain.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,9 +27,12 @@ class GetHistoryForServiceUserConsentActivityTest {
 
     @Test
     void testRetrieveNonExistingConsent() throws Exception {
-        final GetHistoryForServiceUserConsentResponseContent response = activity.handleRequest(
+        final String expectedErrorMessage = String.format(ServiceUserConsentHistoryRepository.CONSENT_NOT_FOUND_MESSAGE,
             TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID);
-        assertNull(response.getData());
+        final ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            activity.handleRequest(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID);
+        });
+        assertEquals(expectedErrorMessage, exception.getMessage());
     }
 
     @Test

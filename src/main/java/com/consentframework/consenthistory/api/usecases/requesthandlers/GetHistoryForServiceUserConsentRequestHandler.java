@@ -2,7 +2,6 @@ package com.consentframework.consenthistory.api.usecases.requesthandlers;
 
 import com.consentframework.consenthistory.api.JSON;
 import com.consentframework.consenthistory.api.domain.constants.ApiPathParameterName;
-import com.consentframework.consenthistory.api.domain.repositories.ServiceUserConsentHistoryRepository;
 import com.consentframework.consenthistory.api.models.ConsentChangeEvent;
 import com.consentframework.consenthistory.api.models.GetHistoryForServiceUserConsentResponseContent;
 import com.consentframework.consenthistory.api.usecases.activities.GetHistoryForServiceUserConsentActivity;
@@ -61,17 +60,10 @@ public class GetHistoryForServiceUserConsentRequestHandler extends ApiRequestHan
         try {
             activityResponse = activity.handleRequest(serviceId, userId, consentId);
             final List<ConsentChangeEvent> consentHistory = activityResponse.getData();
-            if (consentHistory == null || consentHistory.isEmpty()) {
-                logger.info("GetHistoryForServiceUserConsentActivity.handleRequest response has no data: {}", activityResponse);
-                final String errorMessage = String.format(ServiceUserConsentHistoryRepository.CONSENT_NOT_FOUND_MESSAGE,
-                    serviceId, userId, consentId);
-                return logAndBuildErrorResponse(new ResourceNotFoundException(errorMessage));
-            }
             final GetHistoryForServiceUserConsentResponseContent responseContent = new GetHistoryForServiceUserConsentResponseContent()
                 .data(consentHistory);
             responseBodyString = toJsonString(objectMapper, responseContent);
         } catch (final InternalServiceException | JsonProcessingException | ResourceNotFoundException exception) {
-            logger.warn("GetHistoryForServiceUserConsentRequestHandler handling exception {}", exception);
             return logAndBuildErrorResponse(exception);
         }
 
