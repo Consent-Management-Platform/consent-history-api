@@ -2,6 +2,7 @@ package com.consentframework.consenthistory.api.usecases.requesthandlers;
 
 import com.consentframework.consenthistory.api.JSON;
 import com.consentframework.consenthistory.api.domain.constants.ApiPathParameterName;
+import com.consentframework.consenthistory.api.domain.repositories.ServiceUserConsentHistoryRepository;
 import com.consentframework.consenthistory.api.models.ConsentChangeEvent;
 import com.consentframework.consenthistory.api.models.GetHistoryForServiceUserConsentResponseContent;
 import com.consentframework.consenthistory.api.usecases.activities.GetHistoryForServiceUserConsentActivity;
@@ -21,8 +22,6 @@ import java.util.Map;
  * Handles requests to retrieve history for a given service user consent.
  */
 public class GetHistoryForServiceUserConsentRequestHandler extends ApiRequestHandler {
-    public static final String NO_CONSENT_HISTORY_FOUND_MESSAGE = "No consent history found for serviceId: %s, userId: %s, consentId: %s";
-
     private static final ObjectMapper objectMapper = new JSON().getMapper();
 
     private final GetHistoryForServiceUserConsentActivity activity;
@@ -42,7 +41,7 @@ public class GetHistoryForServiceUserConsentRequestHandler extends ApiRequestHan
      * @return API response
      */
     @Override
-    protected Map<String, Object> handleRequest(final ApiRequest request) {
+    public Map<String, Object> handleRequest(final ApiRequest request) {
         final String serviceId;
         final String userId;
         final String consentId;
@@ -60,7 +59,7 @@ public class GetHistoryForServiceUserConsentRequestHandler extends ApiRequestHan
             activityResponse = activity.handleRequest(serviceId, userId, consentId);
             final List<ConsentChangeEvent> consentHistory = activityResponse.getData();
             if (consentHistory == null || consentHistory.isEmpty()) {
-                final String errorMessage = String.format(NO_CONSENT_HISTORY_FOUND_MESSAGE,
+                final String errorMessage = String.format(ServiceUserConsentHistoryRepository.CONSENT_NOT_FOUND_MESSAGE,
                     serviceId, userId, consentId);
                 return logAndBuildErrorResponse(new ResourceNotFoundException(errorMessage));
             }

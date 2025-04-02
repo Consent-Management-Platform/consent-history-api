@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import com.consentframework.consenthistory.api.JSON;
 import com.consentframework.consenthistory.api.domain.constants.ApiHttpResource;
 import com.consentframework.consenthistory.api.domain.constants.ApiPathParameterName;
+import com.consentframework.consenthistory.api.domain.repositories.ServiceUserConsentHistoryRepository;
 import com.consentframework.consenthistory.api.infrastructure.repositories.InMemoryServiceUserConsentHistoryRepository;
 import com.consentframework.consenthistory.api.models.ConsentChangeEvent;
 import com.consentframework.consenthistory.api.models.GetHistoryForServiceUserConsentResponseContent;
@@ -55,7 +56,7 @@ class GetHistoryForServiceUserConsentRequestHandlerTest extends RequestHandlerTe
         final ApiRequest request = buildApiRequest(VALID_PATH_PARAMS, null);
         final Map<String, Object> response = handler.handleRequest(request);
 
-        final String expectedErrorMessage = String.format(GetHistoryForServiceUserConsentRequestHandler.NO_CONSENT_HISTORY_FOUND_MESSAGE,
+        final String expectedErrorMessage = String.format(ServiceUserConsentHistoryRepository.CONSENT_NOT_FOUND_MESSAGE,
                 TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID);
         assertExceptionResponse(HttpStatusCode.NOT_FOUND, expectedErrorMessage, response);
     }

@@ -1,5 +1,6 @@
 package com.consentframework.consenthistory.api.testcommon.constants;
 
+import com.consentframework.consenthistory.api.domain.constants.ApiPathParameterName;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.time.OffsetDateTime;
@@ -32,5 +33,10 @@ public final class TestConstants {
     public static final String TEST_CONSENT_HISTORY_PATH = String.format(
         "/v1/consent-history/services/%s/users/%s/consents/%s",
         TEST_SERVICE_ID, TEST_USER_ID, TEST_CONSENT_ID
+    );
+    public static final Map<String, String> TEST_CONSENT_HISTORY_PATH_PARAMS = Map.of(
+        ApiPathParameterName.SERVICE_ID.getValue(), TestConstants.TEST_SERVICE_ID,
+        ApiPathParameterName.USER_ID.getValue(), TestConstants.TEST_USER_ID,
+        ApiPathParameterName.CONSENT_ID.getValue(), TestConstants.TEST_CONSENT_ID
     );
 }
