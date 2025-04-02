@@ -36,13 +36,13 @@ public final class DynamoDbConsentChangeEventMapper {
     }
 
     private static Consent toConsent(final Map<String, AttributeValue> ddbConsent) {
-        if (ddbConsent == null) {
+        if (ddbConsent == null || ddbConsent.isEmpty()) {
             return null;
         }
         return new Consent()
-            .serviceId(ddbConsent.get(Consent.JSON_PROPERTY_SERVICE_ID).s())
-            .userId(ddbConsent.get(Consent.JSON_PROPERTY_USER_ID).s())
-            .consentId(ddbConsent.get(Consent.JSON_PROPERTY_CONSENT_ID).s())
+            .serviceId(toString(ddbConsent.get(Consent.JSON_PROPERTY_SERVICE_ID)))
+            .userId(toString(ddbConsent.get(Consent.JSON_PROPERTY_USER_ID)))
+            .consentId(toString(ddbConsent.get(Consent.JSON_PROPERTY_CONSENT_ID)))
             .consentVersion(Integer.valueOf(ddbConsent.get(Consent.JSON_PROPERTY_CONSENT_VERSION).n()))
             .status(ConsentStatus.fromValue(ddbConsent.get(Consent.JSON_PROPERTY_STATUS).s()))
             .consentType(toString(ddbConsent.get(Consent.JSON_PROPERTY_CONSENT_TYPE)))
