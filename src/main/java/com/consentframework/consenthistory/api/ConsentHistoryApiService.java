@@ -13,6 +13,8 @@ import com.consentframework.shared.api.domain.constants.HttpMethod;
 import com.consentframework.shared.api.domain.constants.HttpStatusCode;
 import com.consentframework.shared.api.domain.entities.ApiRequest;
 import com.consentframework.shared.api.domain.requesthandlers.ApiRequestHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
@@ -25,6 +27,7 @@ import java.util.Map;
  */
 public class ConsentHistoryApiService implements RequestHandler<ApiRequest, Map<String, Object>> {
     static final String UNSUPPORTED_OPERATION_MESSAGE = "Unsupported resource operation, received resource '%s' and operation '%s'";
+    private static final Logger logger = LogManager.getLogger(ConsentHistoryApiService.class);
 
     private ServiceUserConsentHistoryRepository consentHistoryRepository;
 
@@ -58,6 +61,8 @@ public class ConsentHistoryApiService implements RequestHandler<ApiRequest, Map<
             return buildUnsupportedOperationResponse(request);
         }
 
+        logger.info("Consent History API service received request: {}", request);
+
         if (ApiHttpResource.SERVICE_USER_CONSENT_HISTORY.getValue().equals(request.resource())) {
             if (HttpMethod.GET.name().equals(request.httpMethod())) {
                 final GetHistoryForServiceUserConsentActivity activity =
@@ -73,6 +78,7 @@ public class ConsentHistoryApiService implements RequestHandler<ApiRequest, Map<
         final String requestResource = request == null ? null : request.resource();
         final String requestHttpMethod = request == null ? null : request.httpMethod();
         final String errorMessage = String.format(UNSUPPORTED_OPERATION_MESSAGE, requestResource, requestHttpMethod);
+        logger.warn(errorMessage);
 
         final Map<String, Object> apiErrorResponse = new HashMap<String, Object>();
         apiErrorResponse.put(ApiResponseParameterName.STATUS_CODE.getValue(), HttpStatusCode.BAD_REQUEST.getValue());

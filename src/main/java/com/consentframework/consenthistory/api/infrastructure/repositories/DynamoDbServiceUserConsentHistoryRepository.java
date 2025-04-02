@@ -5,6 +5,8 @@ import com.consentframework.consenthistory.api.infrastructure.entities.DynamoDbS
 import com.consentframework.consenthistory.api.infrastructure.mappers.DynamoDbConsentChangeEventMapper;
 import com.consentframework.consenthistory.api.models.ConsentChangeEvent;
 import com.consentframework.shared.api.domain.exceptions.ResourceNotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
@@ -17,6 +19,8 @@ import java.util.List;
  * DynamoDB implementation of the ServiceUserConsentHistory repository.
  */
 public class DynamoDbServiceUserConsentHistoryRepository implements ServiceUserConsentHistoryRepository {
+    private static final Logger logger = LogManager.getLogger(DynamoDbServiceUserConsentHistoryRepository.class);
+
     private final DynamoDbTable<DynamoDbServiceUserConsentHistoryRecord> consentHistoryTable;
 
     /**
@@ -73,6 +77,7 @@ public class DynamoDbServiceUserConsentHistoryRepository implements ServiceUserC
             throws ResourceNotFoundException {
         final String notFoundMessage = String.format(CONSENT_NOT_FOUND_MESSAGE,
             serviceId, userId, consentId);
+        logger.warn(notFoundMessage);
         throw new ResourceNotFoundException(notFoundMessage);
     }
 }

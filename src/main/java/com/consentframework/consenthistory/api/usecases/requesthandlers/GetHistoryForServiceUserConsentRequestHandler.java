@@ -14,6 +14,8 @@ import com.consentframework.shared.api.domain.parsers.ApiPathParameterParser;
 import com.consentframework.shared.api.domain.requesthandlers.ApiRequestHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +24,7 @@ import java.util.Map;
  * Handles requests to retrieve history for a given service user consent.
  */
 public class GetHistoryForServiceUserConsentRequestHandler extends ApiRequestHandler {
+    private static final Logger logger = LogManager.getLogger(GetHistoryForServiceUserConsentRequestHandler.class);
     private static final ObjectMapper objectMapper = new JSON().getMapper();
 
     private final GetHistoryForServiceUserConsentActivity activity;
@@ -69,6 +72,9 @@ public class GetHistoryForServiceUserConsentRequestHandler extends ApiRequestHan
         } catch (final InternalServiceException | JsonProcessingException | ResourceNotFoundException exception) {
             return logAndBuildErrorResponse(exception);
         }
+
+        logger.info("Successfully retrieved {} consent history records for path {}",
+            activityResponse.getData().size(), request.path());
         return buildApiSuccessResponse(responseBodyString);
     }
 }
