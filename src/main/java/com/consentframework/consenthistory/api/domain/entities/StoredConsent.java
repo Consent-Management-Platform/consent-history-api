@@ -251,7 +251,7 @@ public class StoredConsent {
      * Sets the consent data map and returns the updated StoredConsent.
      */
     public StoredConsent consentData(final Map<String, String> consentData) {
-        this.consentData = consentData;
+        setConsentData(consentData);
         return this;
     }
 
@@ -283,7 +283,7 @@ public class StoredConsent {
     @JsonProperty("consentData")
     @JsonInclude(Include.USE_DEFAULTS)
     public void setConsentData(final Map<String, String> consentData) {
-        this.consentData = consentData;
+        this.consentData = consentData == null ? null : new HashMap<>(consentData);
     }
 
     /**
