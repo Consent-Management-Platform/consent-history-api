@@ -60,6 +60,15 @@ class StoredConsentTest {
     }
 
     @Test
+    void equalsWhenDifferentId() {
+        final StoredConsent consent = TestConstants.TEST_STORED_CONSENT;
+
+        final StoredConsent consentWithDifferentData = cloneStoredConsent(consent)
+            .id("differentId");
+        assertFalse(consent.equals(consentWithDifferentData));
+    }
+
+    @Test
     void equalsWhenDifferentConsentVersion() {
         final StoredConsent consent = TestConstants.TEST_STORED_CONSENT;
 
@@ -122,6 +131,7 @@ class StoredConsentTest {
 
     private StoredConsent cloneStoredConsent(final StoredConsent originalConsent) {
         return new StoredConsent()
+            .id(originalConsent.getId())
             .serviceId(originalConsent.getServiceId())
             .userId(originalConsent.getUserId())
             .consentId(originalConsent.getConsentId())

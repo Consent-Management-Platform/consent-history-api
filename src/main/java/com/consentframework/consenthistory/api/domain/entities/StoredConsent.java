@@ -19,8 +19,20 @@ import java.util.Objects;
 * Differs from externalized Consent data objects in that stored consents use
 * "consentStatus" while externalized consents use "status".
 */
-@JsonPropertyOrder({"consentId", "consentVersion", "userId", "serviceId", "consentStatus", "consentType", "consentData", "expiryTime"})
+@JsonPropertyOrder({
+    "id",
+    "consentId",
+    "consentVersion",
+    "userId",
+    "serviceId",
+    "consentStatus",
+    "consentType",
+    "consentData",
+    "expiryTime"
+})
 public class StoredConsent {
+    public static final String JSON_PROPERTY_ID = "id";
+    private String id;
     public static final String JSON_PROPERTY_CONSENT_ID = "consentId";
     private String consentId;
     public static final String JSON_PROPERTY_CONSENT_VERSION = "consentVersion";
@@ -42,6 +54,33 @@ public class StoredConsent {
      * Default constructor required by Jackson, does not initialize any fields.
      */
     public StoredConsent() {
+    }
+
+    /**
+     * Sets the ID and returns the updated StoredConsent.
+     */
+    public StoredConsent id(final String id) {
+        this.id = id;
+        return this;
+    }
+
+    /**
+     * Returns the ID.
+     */
+    @Nonnull
+    @JsonProperty("id")
+    @JsonInclude(Include.ALWAYS)
+    public String getId() {
+        return this.id;
+    }
+
+    /**
+     * Sets the consent ID.
+     */
+    @JsonProperty("id")
+    @JsonInclude(Include.ALWAYS)
+    public void setId(final String id) {
+        this.id = id;
     }
 
     /**
@@ -280,7 +319,8 @@ public class StoredConsent {
             return true;
         } else if (o != null && this.getClass() == o.getClass()) {
             final StoredConsent consent = (StoredConsent) o;
-            return Objects.equals(this.consentId, consent.consentId)
+            return Objects.equals(this.id, consent.id)
+                && Objects.equals(this.consentId, consent.consentId)
                 && Objects.equals(this.consentVersion, consent.consentVersion)
                 && Objects.equals(this.userId, consent.userId)
                 && Objects.equals(this.serviceId, consent.serviceId)
@@ -297,6 +337,7 @@ public class StoredConsent {
      */
     public int hashCode() {
         return Objects.hash(new Object[]{
+            this.id,
             this.consentId,
             this.consentVersion,
             this.userId,

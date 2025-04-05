@@ -54,6 +54,7 @@ public final class TestConstants {
         .consentData(TEST_CONSENT_DATA);
 
     public static final StoredConsent TEST_STORED_CONSENT = new StoredConsent()
+        .id(TEST_PARTITION_KEY)
         .serviceId(TEST_SERVICE_ID)
         .userId(TEST_USER_ID)
         .consentId(TEST_CONSENT_ID)
