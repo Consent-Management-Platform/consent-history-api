@@ -1,6 +1,8 @@
 package com.consentframework.consenthistory.api.testcommon.constants;
 
 import com.consentframework.consenthistory.api.domain.constants.ApiPathParameterName;
+import com.consentframework.consenthistory.api.models.Consent;
+import com.consentframework.consenthistory.api.models.ConsentStatus;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.time.OffsetDateTime;
@@ -17,6 +19,7 @@ public final class TestConstants {
     public static final String TEST_USER_ID = "TestUserId";
     public static final String TEST_PARTITION_KEY = String.format("%s|%s|%s", TEST_SERVICE_ID, TEST_USER_ID, TEST_CONSENT_ID);
 
+    public static final ConsentStatus TEST_CONSENT_STATUS = ConsentStatus.ACTIVE;
     public static final String TEST_CONSENT_TYPE = "TestConsentType";
     public static final Map<String, String> TEST_CONSENT_DATA = Map.of(
         "testKey1", "testValue1",
@@ -39,4 +42,13 @@ public final class TestConstants {
         ApiPathParameterName.USER_ID.getValue(), TestConstants.TEST_USER_ID,
         ApiPathParameterName.CONSENT_ID.getValue(), TestConstants.TEST_CONSENT_ID
     );
+
+    public static final Consent TEST_CONSENT = new Consent()
+        .serviceId(TEST_SERVICE_ID)
+        .userId(TEST_USER_ID)
+        .consentId(TEST_CONSENT_ID)
+        .consentVersion(1)
+        .status(TEST_CONSENT_STATUS)
+        .consentType(TEST_CONSENT_TYPE)
+        .consentData(TEST_CONSENT_DATA);
 }

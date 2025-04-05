@@ -11,7 +11,6 @@ import com.consentframework.consenthistory.api.models.ConsentEventType;
 import com.consentframework.consenthistory.api.testcommon.constants.TestConstants;
 import com.consentframework.consenthistory.api.testcommon.utils.DynamoDbServiceUserConsentHistoryRecordGenerator;
 import org.junit.jupiter.api.Test;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.Map;
 
@@ -31,8 +30,8 @@ class DynamoDbConsentChangeEventMapperTest {
 
     @Test
     void toConsentForConsentInsertEvent() {
-        final Map<String, AttributeValue> ddbOldImage = null;
-        final Map<String, AttributeValue> ddbNewImage = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage("1");
+        final Consent ddbOldImage = null;
+        final Consent ddbNewImage = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage("1");
         final DynamoDbServiceUserConsentHistoryRecord ddbRecord = DynamoDbServiceUserConsentHistoryRecordGenerator.generate(
             ddbOldImage, ddbNewImage, ConsentEventType.INSERT);
         validateConvertedConsentChangeEvent(ddbRecord);
@@ -40,8 +39,8 @@ class DynamoDbConsentChangeEventMapperTest {
 
     @Test
     void toConsentForConsentRemoveEvent() {
-        final Map<String, AttributeValue> ddbOldImage = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage("1");
-        final Map<String, AttributeValue> ddbNewImage = null;
+        final Consent ddbOldImage = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage("1");
+        final Consent ddbNewImage = null;
         final DynamoDbServiceUserConsentHistoryRecord ddbRecord = DynamoDbServiceUserConsentHistoryRecordGenerator.generate(
             ddbOldImage, ddbNewImage, ConsentEventType.REMOVE);
         validateConvertedConsentChangeEvent(ddbRecord);
@@ -49,8 +48,8 @@ class DynamoDbConsentChangeEventMapperTest {
 
     @Test
     void toConsentForConsentModifyEvent() {
-        final Map<String, AttributeValue> ddbOldImage = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage("1");
-        final Map<String, AttributeValue> ddbNewImage = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage("2");
+        final Consent ddbOldImage = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage("1");
+        final Consent ddbNewImage = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage("2");
         final DynamoDbServiceUserConsentHistoryRecord ddbRecord = DynamoDbServiceUserConsentHistoryRecordGenerator.generate(
             ddbOldImage, ddbNewImage, ConsentEventType.MODIFY);
         validateConvertedConsentChangeEvent(ddbRecord);
@@ -58,8 +57,8 @@ class DynamoDbConsentChangeEventMapperTest {
 
     @Test
     void toConsentForConsentUpdateEventDroppingAttributes() {
-        final Map<String, AttributeValue> ddbOldImage = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage("1");
-        final Map<String, AttributeValue> ddbNewImage = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage(
+        final Consent ddbOldImage = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage("1");
+        final Consent ddbNewImage = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage(
             "2", null, null);
         final DynamoDbServiceUserConsentHistoryRecord ddbRecord = DynamoDbServiceUserConsentHistoryRecordGenerator.generate(
             ddbOldImage, ddbNewImage, ConsentEventType.MODIFY);
@@ -85,20 +84,20 @@ class DynamoDbConsentChangeEventMapperTest {
         validateConsentImage(ddbRecord.newImage(), result.getNewImage(), TestConstants.TEST_CONSENT_DATA, TestConstants.TEST_EVENT_TIME);
     }
 
-    private void validateConsentImage(final Map<String, AttributeValue> ddbConsentImage, final Consent consent,
+    private void validateConsentImage(final Consent sourceDdbConsentImage, final Consent parsedConsent,
             final Map<String, String> expectedConsentData, final String expectedExpiryTime) {
-        if (ddbConsentImage == null) {
-            assertNull(consent);
+        if (sourceDdbConsentImage == null) {
+            assertNull(parsedConsent);
             return;
         }
-        assertNotNull(consent);
-        assertEquals(TestConstants.TEST_SERVICE_ID, consent.getServiceId());
-        assertEquals(TestConstants.TEST_USER_ID, consent.getUserId());
-        assertEquals(TestConstants.TEST_CONSENT_ID, consent.getConsentId());
-        assertEquals(Integer.valueOf(ddbConsentImage.get(Consent.JSON_PROPERTY_CONSENT_VERSION).n()), consent.getConsentVersion());
-        assertEquals(ddbConsentImage.get(Consent.JSON_PROPERTY_STATUS).s(), consent.getStatus().name());
-        assertEquals(ddbConsentImage.get(Consent.JSON_PROPERTY_CONSENT_TYPE).s(), consent.getConsentType());
-        assertEquals(expectedConsentData, consent.getConsentData());
-        assertEquals(expectedExpiryTime, expectedExpiryTime == null ? null : consent.getExpiryTime().toString());
+        assertNotNull(parsedConsent);
+        assertEquals(TestConstants.TEST_SERVICE_ID, parsedConsent.getServiceId());
+        assertEquals(TestConstants.TEST_USER_ID, parsedConsent.getUserId());
+        assertEquals(TestConstants.TEST_CONSENT_ID, parsedConsent.getConsentId());
+        assertEquals(sourceDdbConsentImage.getConsentVersion(), parsedConsent.getConsentVersion());
+        assertEquals(sourceDdbConsentImage.getStatus(), parsedConsent.getStatus());
+        assertEquals(sourceDdbConsentImage.getConsentType(), parsedConsent.getConsentType());
+        assertEquals(expectedConsentData, parsedConsent.getConsentData());
+        assertEquals(expectedExpiryTime, expectedExpiryTime == null ? null : parsedConsent.getExpiryTime().toString());
     }
 }
