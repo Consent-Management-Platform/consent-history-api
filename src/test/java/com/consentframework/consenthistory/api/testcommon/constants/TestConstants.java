@@ -1,6 +1,7 @@
 package com.consentframework.consenthistory.api.testcommon.constants;
 
 import com.consentframework.consenthistory.api.domain.constants.ApiPathParameterName;
+import com.consentframework.consenthistory.api.domain.entities.StoredConsent;
 import com.consentframework.consenthistory.api.models.Consent;
 import com.consentframework.consenthistory.api.models.ConsentStatus;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -49,6 +50,15 @@ public final class TestConstants {
         .consentId(TEST_CONSENT_ID)
         .consentVersion(1)
         .status(TEST_CONSENT_STATUS)
+        .consentType(TEST_CONSENT_TYPE)
+        .consentData(TEST_CONSENT_DATA);
+
+    public static final StoredConsent TEST_STORED_CONSENT = new StoredConsent()
+        .serviceId(TEST_SERVICE_ID)
+        .userId(TEST_USER_ID)
+        .consentId(TEST_CONSENT_ID)
+        .consentVersion(1)
+        .consentStatus(TEST_CONSENT_STATUS)
         .consentType(TEST_CONSENT_TYPE)
         .consentData(TEST_CONSENT_DATA);
 }

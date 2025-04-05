@@ -1,7 +1,7 @@
 package com.consentframework.consenthistory.api.infrastructure.entities;
 
+import com.consentframework.consenthistory.api.domain.entities.StoredConsent;
 import com.consentframework.consenthistory.api.infrastructure.mappers.DynamoDbConsentConverter;
-import com.consentframework.consenthistory.api.models.Consent;
 import com.consentframework.shared.api.infrastructure.annotations.DynamoDbImmutableStyle;
 import jakarta.annotation.Nullable;
 import org.immutables.value.Value.Immutable;
@@ -42,9 +42,9 @@ public interface DynamoDbServiceUserConsentHistoryRecord {
 
     @DynamoDbConvertedBy(DynamoDbConsentConverter.class)
     @Nullable
-    Consent oldImage();
+    StoredConsent oldImage();
 
     @DynamoDbConvertedBy(DynamoDbConsentConverter.class)
     @Nullable
-    Consent newImage();
+    StoredConsent newImage();
 }

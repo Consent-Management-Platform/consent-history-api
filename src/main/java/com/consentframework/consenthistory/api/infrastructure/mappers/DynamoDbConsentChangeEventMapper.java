@@ -1,6 +1,8 @@
 package com.consentframework.consenthistory.api.infrastructure.mappers;
 
+import com.consentframework.consenthistory.api.domain.entities.StoredConsent;
 import com.consentframework.consenthistory.api.infrastructure.entities.DynamoDbServiceUserConsentHistoryRecord;
+import com.consentframework.consenthistory.api.models.Consent;
 import com.consentframework.consenthistory.api.models.ConsentChangeEvent;
 import com.consentframework.consenthistory.api.models.ConsentEventType;
 
@@ -26,7 +28,22 @@ public final class DynamoDbConsentChangeEventMapper {
             .eventId(record.eventId())
             .eventTime(OffsetDateTime.parse(record.eventTime()).withOffsetSameLocal(ZoneOffset.UTC))
             .eventType(ConsentEventType.fromValue(record.eventType()))
-            .oldImage(record.oldImage())
-            .newImage(record.newImage());
+            .oldImage(toConsent(record.oldImage()))
+            .newImage(toConsent(record.newImage()));
+    }
+
+    private static Consent toConsent(final StoredConsent storedConsent) {
+        if (storedConsent == null) {
+            return null;
+        }
+        return new Consent()
+            .consentId(storedConsent.getConsentId())
+            .consentVersion(storedConsent.getConsentVersion())
+            .userId(storedConsent.getUserId())
+            .serviceId(storedConsent.getServiceId())
+            .status(storedConsent.getConsentStatus())
+            .consentType(storedConsent.getConsentType())
+            .consentData(storedConsent.getConsentData())
+            .expiryTime(storedConsent.getExpiryTime());
     }
 }
