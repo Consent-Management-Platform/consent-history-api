@@ -115,6 +115,12 @@ class StoredConsentTest {
     }
 
     @Test
+    void equalsWhenDifferentType() {
+        final StoredConsent consent = TestConstants.TEST_STORED_CONSENT;
+        assertFalse(consent.equals(TestConstants.TEST_CONSENT));
+    }
+
+    @Test
     void hashCodeIsSameForEqualValues() {
         final StoredConsent consent = TestConstants.TEST_STORED_CONSENT;
         final StoredConsent clonedConsent = cloneStoredConsent(consent);
@@ -127,6 +133,39 @@ class StoredConsentTest {
         final StoredConsent clonedConsent = cloneStoredConsent(consent)
             .consentData(Map.of("differentKey", "differentValue"));
         assertNotEquals(consent.hashCode(), clonedConsent.hashCode());
+    }
+
+    @Test
+    void putConsentDataItemWhenNotExists() {
+        final StoredConsent consent = new StoredConsent()
+            .consentData(null);
+
+        final String newKey = "newKey";
+        final String newValue = "newValue";
+        consent.putConsentDataItem(newKey, newValue);
+
+        final Map<String, String> expectedConsentData = Map.of(newKey, newValue);
+        assertEquals(expectedConsentData, consent.getConsentData());
+    }
+
+    @Test
+    void putConsentDataItemWhenExists() {
+        final StoredConsent consent = cloneStoredConsent(TestConstants.TEST_STORED_CONSENT);
+
+        final String newKey = "newKey";
+        final String newValue = "newValue";
+        consent.putConsentDataItem(newKey, newValue);
+
+        final String existingKey = "testKey1";
+        final String updatedValue = "testValue1_v2";
+        consent.putConsentDataItem(existingKey, updatedValue);
+
+        final Map<String, String> expectedConsentData = Map.of(
+            existingKey, updatedValue,
+            "testKey2", "testValue2",
+            newKey, newValue
+        );
+        assertEquals(expectedConsentData, consent.getConsentData());
     }
 
     private StoredConsent cloneStoredConsent(final StoredConsent originalConsent) {
