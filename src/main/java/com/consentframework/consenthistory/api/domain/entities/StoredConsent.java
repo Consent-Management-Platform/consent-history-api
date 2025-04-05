@@ -16,8 +16,10 @@ import java.util.Objects;
 /**
 * Represents the Consent data stored in DynamoDB.
 *
-* Differs from externalized Consent data objects in that stored consents use
-* "consentStatus" while externalized consents use "status".
+* Differences from externalized Consent data objects:
+* - Stored consents have an "id" field that represents the partition key of "ServiceId|UserId|ConsentId",
+    while externalized consents do not have this field.
+* - Stored consents use the "consentStatus" attribute name while externalized consents use "status".
 */
 @JsonPropertyOrder({
     "id",
