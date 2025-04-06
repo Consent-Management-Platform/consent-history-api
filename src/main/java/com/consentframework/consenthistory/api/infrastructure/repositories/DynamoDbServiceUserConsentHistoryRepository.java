@@ -13,6 +13,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -57,6 +58,7 @@ public class DynamoDbServiceUserConsentHistoryRepository implements ServiceUserC
                 logger.info("Processing DynamoDB consent history record: {}", ddbHistoryRecord);
                 return DynamoDbConsentChangeEventMapper.toConsentChangeEvent(ddbHistoryRecord);
             })
+            .sorted(Comparator.comparing(ConsentChangeEvent::getEventTime))
             .toList();
 
         if (consentHistoryRecords.isEmpty()) {

@@ -37,11 +37,32 @@ public final class DynamoDbServiceUserConsentHistoryRecordGenerator {
             final StoredConsent oldImage,
             final StoredConsent newImage,
             final ConsentEventType eventType) {
+        return generate(
+            oldImage,
+            newImage,
+            eventType,
+            OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC)
+        );
+    }
+
+    /**
+     * Generates a DynamoDbServiceUserConsentHistoryRecord with default values.
+     *
+     * @param oldImage old consent before change event
+     * @param newImage new consent after change event
+     * @param eventType type of change
+     * @param eventTime time of change event
+     */
+    public static DynamoDbServiceUserConsentHistoryRecord generate(
+            final StoredConsent oldImage,
+            final StoredConsent newImage,
+            final ConsentEventType eventType,
+            final OffsetDateTime eventTime) {
         return DynamoDbServiceUserConsentHistoryRecord.builder()
             .id(TestConstants.TEST_PARTITION_KEY)
             .eventId(UUID.randomUUID().toString())
             .eventType(eventType.name())
-            .eventTime(OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).toString())
+            .eventTime(eventTime.toString())
             .oldImage(oldImage)
             .newImage(newImage)
             .build();
