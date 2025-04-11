@@ -25,6 +25,10 @@ public enum ApiPathParameterName {
         return value;
     }
 
+    // Required path parameters for /consents APIs
+    public static final List<String> CONSENTS_PATH_PARAM_NAMES = List.of(
+        SERVICE_ID.getValue(), USER_ID.getValue());
+
     // Required path parameters for /consents/{consentId} APIs, eg. get consent history
     public static final List<String> CONSENT_PATH_PARAM_NAMES = List.of(
         SERVICE_ID.getValue(), USER_ID.getValue(), CONSENT_ID.getValue());

@@ -37,6 +37,10 @@ public final class TestConstants {
 
     public static final String TEST_EVENT_TIME = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).toString();
 
+    public static final String TEST_CONSENTS_HISTORY_PATH = String.format(
+        "/v1/consent-history/services/%s/users/%s/consents",
+        TEST_SERVICE_ID, TEST_USER_ID
+    );
     public static final String TEST_CONSENT_HISTORY_PATH = String.format(
         "/v1/consent-history/services/%s/users/%s/consents/%s",
         TEST_SERVICE_ID, TEST_USER_ID, TEST_CONSENT_ID
