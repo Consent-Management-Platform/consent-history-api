@@ -55,10 +55,10 @@ class DynamoDbServiceUserConsentHistoryRepositoryTest {
         consentV2, consentV3, ConsentEventType.MODIFY, OffsetDateTime.now().plusSeconds(2).withOffsetSameInstant(ZoneOffset.UTC)
     );
     final Page<DynamoDbServiceUserConsentHistoryRecord> page1 = Page.builder(DynamoDbServiceUserConsentHistoryRecord.class)
-        .items(List.of(record1, record2))
+        .items(List.of(record3, record1))
         .build();
     final Page<DynamoDbServiceUserConsentHistoryRecord> page2 = Page.builder(DynamoDbServiceUserConsentHistoryRecord.class)
-        .items(List.of(record3))
+        .items(List.of(record2))
         .build();
 
     @SuppressWarnings("unchecked")
@@ -142,7 +142,7 @@ class DynamoDbServiceUserConsentHistoryRepositoryTest {
                 .items(List.of(historyRecordForDistinctConsent))
                 .build();
 
-        when(queryResults.stream()).thenReturn(List.of(page1, pageForDistinctConsent, page2).stream());
+        when(queryResults.stream()).thenReturn(List.of(page2, pageForDistinctConsent, page1).stream());
 
         @SuppressWarnings("unchecked")
         final DynamoDbIndex<DynamoDbServiceUserConsentHistoryRecord> index = mock(DynamoDbIndex.class);

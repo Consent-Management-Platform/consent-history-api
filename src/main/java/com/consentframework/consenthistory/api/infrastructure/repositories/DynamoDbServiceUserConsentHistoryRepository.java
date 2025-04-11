@@ -17,10 +17,12 @@ import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * DynamoDB implementation of the ServiceUserConsentHistory repository.
@@ -56,11 +58,7 @@ public class DynamoDbServiceUserConsentHistoryRepository implements ServiceUserC
             throwNotFoundError(serviceId, userId, consentId);
         }
 
-        final List<ConsentChangeEvent> consentHistoryRecords = queryResults.stream()
-            .flatMap(page -> page.items().stream())
-            .map(DynamoDbConsentChangeEventMapper::toConsentChangeEvent)
-            .toList();
-
+        final List<ConsentChangeEvent> consentHistoryRecords = parseConsentHistoryRecords(queryResults).toList();
         if (consentHistoryRecords.isEmpty()) {
             throwNotFoundError(serviceId, userId, consentId);
         }
@@ -112,23 +110,35 @@ public class DynamoDbServiceUserConsentHistoryRepository implements ServiceUserC
 
         final Map<String, List<ConsentChangeEvent>> consentHistoryByConsentId = new HashMap<>();
 
-        queryResults.stream().forEach(pageResults -> {
-            pageResults.items().forEach(ddbHistoryRecord -> {
-                final ConsentChangeEvent consentChangeEvent = DynamoDbConsentChangeEventMapper.toConsentChangeEvent(ddbHistoryRecord);
-                final String consentId = consentChangeEvent.getConsentId();
-                logger.info("getConsentHistory({}, {}) retrieved consent change event with consentId: {}, eventId: {}",
-                    serviceId, userId, consentId, consentChangeEvent.getEventId());
-                if (consentHistoryByConsentId.containsKey(consentId)) {
-                    consentHistoryByConsentId.get(consentId).add(consentChangeEvent);
-                } else {
-                    final List<ConsentChangeEvent> consentHistory = new ArrayList<>();
-                    consentHistory.add(consentChangeEvent);
-                    consentHistoryByConsentId.put(consentId, consentHistory);
-                }
-            });
+        final Stream<ConsentChangeEvent> consentHistoryRecords = parseConsentHistoryRecords(queryResults);
+        consentHistoryRecords.forEach(consentChangeEvent -> {
+            final String consentId = consentChangeEvent.getConsentId();
+            logger.info("getConsentHistory({}, {}) retrieved consent change event with consentId: {}, eventId: {}",
+                serviceId, userId, consentId, consentChangeEvent.getEventId());
+            if (consentHistoryByConsentId.containsKey(consentId)) {
+                consentHistoryByConsentId.get(consentId).add(consentChangeEvent);
+            } else {
+                final List<ConsentChangeEvent> consentHistory = new ArrayList<>();
+                consentHistory.add(consentChangeEvent);
+                consentHistoryByConsentId.put(consentId, consentHistory);
+            }
         });
 
         return consentHistoryByConsentId;
+    }
+
+    /**
+     * Parse the consent history records into a stream of ConsentChangeEvent objects, sorted ascending by event time.
+     *
+     * @param queryResults ConsentHistory DynamoDB query results
+     * @return Stream of consent change events
+     */
+    private Stream<ConsentChangeEvent> parseConsentHistoryRecords(
+            final SdkIterable<Page<DynamoDbServiceUserConsentHistoryRecord>> queryResults) {
+        return queryResults.stream()
+            .flatMap(page -> page.items().stream())
+            .map(DynamoDbConsentChangeEventMapper::toConsentChangeEvent)
+            .sorted(Comparator.comparing(ConsentChangeEvent::getEventTime));
     }
 
     private ConsentHistory parseConsentHistory(final Map.Entry<String, List<ConsentChangeEvent>> consentIdAndChangeEvents) {
@@ -147,7 +157,6 @@ public class DynamoDbServiceUserConsentHistoryRepository implements ServiceUserC
 
         return QueryEnhancedRequest.builder()
             .queryConditional(QueryConditional.keyEqualTo(queryKey))
-            .scanIndexForward(true) // Sort ascending by event time (oldest events first)
             .build();
     }
 
@@ -161,7 +170,6 @@ public class DynamoDbServiceUserConsentHistoryRepository implements ServiceUserC
 
         return QueryEnhancedRequest.builder()
             .queryConditional(QueryConditional.keyEqualTo(queryKey))
-            .scanIndexForward(true) // Sort ascending by event time (oldest events first)
             .build();
     }
 
