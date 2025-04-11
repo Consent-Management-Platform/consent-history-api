@@ -357,10 +357,10 @@ public class StoredConsent {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class StoredConsent {\n");
+        sb.append("    serviceId: ").append(this.toIndentedString(this.serviceId)).append("\n");
+        sb.append("    userId: ").append(this.toIndentedString(this.userId)).append("\n");
         sb.append("    consentId: ").append(this.toIndentedString(this.consentId)).append("\n");
         sb.append("    consentVersion: ").append(this.toIndentedString(this.consentVersion)).append("\n");
-        sb.append("    userId: ").append(this.toIndentedString(this.userId)).append("\n");
-        sb.append("    serviceId: ").append(this.toIndentedString(this.serviceId)).append("\n");
         sb.append("    consentStatus: ").append(this.toIndentedString(this.consentStatus)).append("\n");
         sb.append("    consentType: ").append(this.toIndentedString(this.consentType)).append("\n");
         sb.append("    consentData: ").append(this.toIndentedString(this.consentData)).append("\n");

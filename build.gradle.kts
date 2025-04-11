@@ -43,7 +43,7 @@ dependencies {
     implementation("software.amazon.awssdk:dynamodb-enhanced:$dynamoDbClientVersion")
 
     // Consent history API models
-    implementation("com.consentframework.consenthistory:consenthistory-api-models:0.1.0")
+    implementation("com.consentframework.consenthistory:consenthistory-api-models:0.2.0")
 
     // Common Consent Framework API Java libraries
     implementation("com.consentframework:api-java-common:0.0.6")
@@ -81,7 +81,7 @@ tasks {
         violationRules {
             rule {
                 limit {
-                    minimum = BigDecimal.valueOf(0.91)
+                    minimum = BigDecimal.valueOf(0.95)
                 }
             }
         }

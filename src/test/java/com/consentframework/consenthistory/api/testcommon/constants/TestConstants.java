@@ -16,9 +16,12 @@ import java.util.stream.Collectors;
  */
 public final class TestConstants {
     public static final String TEST_CONSENT_ID = "TestConsentId";
+    public static final String TEST_CONSENT_ID_2 = "TestConsentId2";
     public static final String TEST_SERVICE_ID = "TestServiceId";
     public static final String TEST_USER_ID = "TestUserId";
     public static final String TEST_PARTITION_KEY = String.format("%s|%s|%s", TEST_SERVICE_ID, TEST_USER_ID, TEST_CONSENT_ID);
+    public static final String TEST_PARTITION_KEY_2 = String.format("%s|%s|%s", TEST_SERVICE_ID, TEST_USER_ID, TEST_CONSENT_ID_2);
+    public static final String TEST_SERVICE_USER_ID = String.format("%s|%s", TEST_SERVICE_ID, TEST_USER_ID);
 
     public static final ConsentStatus TEST_CONSENT_STATUS = ConsentStatus.ACTIVE;
     public static final String TEST_CONSENT_TYPE = "TestConsentType";

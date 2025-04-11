@@ -168,6 +168,31 @@ class StoredConsentTest {
         assertEquals(expectedConsentData, consent.getConsentData());
     }
 
+    @Test
+    void toStringMatchesExpectedFormat() {
+        final StoredConsent consent = TestConstants.TEST_STORED_CONSENT;
+        final String expectedString = String.format("class StoredConsent {\n"
+            + "    serviceId: %s\n"
+            + "    userId: %s\n"
+            + "    consentId: %s\n"
+            + "    consentVersion: %d\n"
+            + "    consentStatus: %s\n"
+            + "    consentType: %s\n"
+            + "    consentData: %s\n"
+            + "    expiryTime: %s\n"
+            + "}",
+            consent.getServiceId(),
+            consent.getUserId(),
+            consent.getConsentId(),
+            consent.getConsentVersion(),
+            consent.getConsentStatus(),
+            consent.getConsentType(),
+            consent.getConsentData(),
+            consent.getExpiryTime());
+        final String consentString = consent.toString();
+        assertEquals(expectedString, consentString);
+    }
+
     private StoredConsent cloneStoredConsent(final StoredConsent originalConsent) {
         return new StoredConsent()
             .id(originalConsent.getId())

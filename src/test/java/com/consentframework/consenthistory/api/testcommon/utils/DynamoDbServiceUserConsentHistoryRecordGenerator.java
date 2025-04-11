@@ -63,6 +63,7 @@ public final class DynamoDbServiceUserConsentHistoryRecordGenerator {
             .eventId(UUID.randomUUID().toString())
             .eventType(eventType.name())
             .eventTime(eventTime.toString())
+            .serviceUserId(TestConstants.TEST_SERVICE_USER_ID)
             .oldImage(oldImage)
             .newImage(newImage)
             .build();
