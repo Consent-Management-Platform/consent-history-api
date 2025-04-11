@@ -6,8 +6,10 @@ import com.consentframework.consenthistory.api.domain.constants.ApiHttpResource;
 import com.consentframework.consenthistory.api.domain.repositories.ServiceUserConsentHistoryRepository;
 import com.consentframework.consenthistory.api.infrastructure.entities.DynamoDbServiceUserConsentHistoryRecord;
 import com.consentframework.consenthistory.api.infrastructure.repositories.DynamoDbServiceUserConsentHistoryRepository;
+import com.consentframework.consenthistory.api.usecases.activities.GetHistoryForServiceUserActivity;
 import com.consentframework.consenthistory.api.usecases.activities.GetHistoryForServiceUserConsentActivity;
 import com.consentframework.consenthistory.api.usecases.requesthandlers.GetHistoryForServiceUserConsentRequestHandler;
+import com.consentframework.consenthistory.api.usecases.requesthandlers.GetHistoryForServiceUserRequestHandler;
 import com.consentframework.shared.api.domain.constants.ApiResponseParameterName;
 import com.consentframework.shared.api.domain.constants.HttpMethod;
 import com.consentframework.shared.api.domain.constants.HttpStatusCode;
@@ -63,11 +65,14 @@ public class ConsentHistoryApiService implements RequestHandler<ApiRequest, Map<
 
         logger.info("Consent History API service received request: {}", request);
 
-        if (ApiHttpResource.SERVICE_USER_CONSENT_HISTORY.getValue().equals(request.resource())) {
-            if (HttpMethod.GET.name().equals(request.httpMethod())) {
+        if (HttpMethod.GET.name().equals(request.httpMethod())) {
+            if (ApiHttpResource.SERVICE_USER_CONSENT_HISTORY.getValue().equals(request.resource())) {
                 final GetHistoryForServiceUserConsentActivity activity =
                     new GetHistoryForServiceUserConsentActivity(consentHistoryRepository);
                 return new GetHistoryForServiceUserConsentRequestHandler(activity).handleRequest(request);
+            } else if (ApiHttpResource.SERVICE_USER_HISTORY.getValue().equals(request.resource())) {
+                final GetHistoryForServiceUserActivity activity = new GetHistoryForServiceUserActivity(consentHistoryRepository);
+                return new GetHistoryForServiceUserRequestHandler(activity).handleRequest(request);
             }
         }
 

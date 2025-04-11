@@ -51,7 +51,7 @@ class ConsentHistoryApiServiceTest {
     }
 
     @Test
-    void handleRequestGetHistoryWhenNotFound() {
+    void handleRequestGetConsentHistoryWhenNotFound() {
         final ApiRequest request = new ApiRequest(
             HttpMethod.GET.name(),
             ApiHttpResource.SERVICE_USER_CONSENT_HISTORY.getValue(),
@@ -79,7 +79,7 @@ class ConsentHistoryApiServiceTest {
     }
 
     @Test
-    void handleRequestGetHistoryWhenFound() {
+    void handleRequestGetConsentHistoryWhenFound() {
         final ApiRequest request = new ApiRequest(
             HttpMethod.GET.name(),
             ApiHttpResource.SERVICE_USER_CONSENT_HISTORY.getValue(),
@@ -103,6 +103,70 @@ class ConsentHistoryApiServiceTest {
         assertEquals(
             String.format(
                 "{\"data\":[{\"consentId\":\"%s\",\"eventId\":\"%s\",\"eventTime\":\"%s\",\"eventType\":\"%s\"}]}",
+                consentChangeEvent.getConsentId(),
+                consentChangeEvent.getEventId(),
+                consentChangeEvent.getEventTime().atZoneSameInstant(ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+                consentChangeEvent.getEventType().name()
+            ),
+            response.get(ApiResponseParameterName.BODY.getValue())
+        );
+    }
+
+    @Test
+    void handleRequestGetServiceUserHistoryWhenNotFound() {
+        final ApiRequest request = new ApiRequest(
+            HttpMethod.GET.name(),
+            ApiHttpResource.SERVICE_USER_HISTORY.getValue(),
+            TestConstants.TEST_SERVICE_USER_HISTORY_PATH,
+            TestConstants.TEST_SERVICE_USER_HISTORY_PATH_PARAMS,
+            null,
+            null,
+            false,
+            null
+        );
+        final ServiceUserConsentHistoryRepository repository = new InMemoryServiceUserConsentHistoryRepository();
+        final ConsentHistoryApiService service = new ConsentHistoryApiService(repository);
+
+        final Map<String, Object> response = service.handleRequest(request, null);
+        assertNotNull(response);
+        assertEquals(HttpStatusCode.NOT_FOUND.getValue(), response.get(ApiResponseParameterName.STATUS_CODE.getValue()));
+        assertEquals(
+            String.format(
+                "{\"message\":\"%s\"}",
+                String.format(ServiceUserConsentHistoryRepository.SERVICE_USER_CONSENTS_NOT_FOUND,
+                    TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID)
+            ),
+            response.get(ApiResponseParameterName.BODY.getValue())
+        );
+    }
+
+    @Test
+    void handleRequestGetServiceUserHistoryWhenFound() {
+        final ApiRequest request = new ApiRequest(
+            HttpMethod.GET.name(),
+            ApiHttpResource.SERVICE_USER_HISTORY.getValue(),
+            TestConstants.TEST_SERVICE_USER_HISTORY_PATH,
+            TestConstants.TEST_SERVICE_USER_HISTORY_PATH_PARAMS,
+            null,
+            null,
+            false,
+            null
+        );
+        final InMemoryServiceUserConsentHistoryRepository repository = new InMemoryServiceUserConsentHistoryRepository();
+        final ConsentChangeEvent consentChangeEvent = ConsentChangeEventGenerator.generate();
+        repository.addConsentHistoryRecord(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID,
+            consentChangeEvent);
+        final ConsentHistoryApiService service = new ConsentHistoryApiService(repository);
+
+        final Map<String, Object> response = service.handleRequest(request, null);
+        assertNotNull(response);
+        assertEquals(HttpStatusCode.SUCCESS.getValue(), response.get(ApiResponseParameterName.STATUS_CODE.getValue()));
+        assertEquals(
+            String.format(
+                "{\"data\":[{\"consentId\":\"%s\",\"history\":["
+                + "{\"consentId\":\"%s\",\"eventId\":\"%s\",\"eventTime\":\"%s\",\"eventType\":\"%s\"}"
+                + "]}]}",
+                TestConstants.TEST_PARTITION_KEY,
                 consentChangeEvent.getConsentId(),
                 consentChangeEvent.getEventId(),
                 consentChangeEvent.getEventTime().atZoneSameInstant(ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),

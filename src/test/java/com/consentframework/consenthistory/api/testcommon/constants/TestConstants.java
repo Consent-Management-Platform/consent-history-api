@@ -37,18 +37,22 @@ public final class TestConstants {
 
     public static final String TEST_EVENT_TIME = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).toString();
 
-    public static final String TEST_CONSENTS_HISTORY_PATH = String.format(
-        "/v1/consent-history/services/%s/users/%s/consents",
-        TEST_SERVICE_ID, TEST_USER_ID
-    );
     public static final String TEST_CONSENT_HISTORY_PATH = String.format(
         "/v1/consent-history/services/%s/users/%s/consents/%s",
         TEST_SERVICE_ID, TEST_USER_ID, TEST_CONSENT_ID
+    );
+    public static final String TEST_SERVICE_USER_HISTORY_PATH = String.format(
+        "/v1/consent-history/services/%s/users/%s/consents",
+        TEST_SERVICE_ID, TEST_USER_ID
     );
     public static final Map<String, String> TEST_CONSENT_HISTORY_PATH_PARAMS = Map.of(
         ApiPathParameterName.SERVICE_ID.getValue(), TestConstants.TEST_SERVICE_ID,
         ApiPathParameterName.USER_ID.getValue(), TestConstants.TEST_USER_ID,
         ApiPathParameterName.CONSENT_ID.getValue(), TestConstants.TEST_CONSENT_ID
+    );
+    public static final Map<String, String> TEST_SERVICE_USER_HISTORY_PATH_PARAMS = Map.of(
+        ApiPathParameterName.SERVICE_ID.getValue(), TestConstants.TEST_SERVICE_ID,
+        ApiPathParameterName.USER_ID.getValue(), TestConstants.TEST_USER_ID
     );
 
     public static final Consent TEST_CONSENT = new Consent()

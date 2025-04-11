@@ -115,7 +115,7 @@ class GetHistoryForServiceUserRequestHandlerTest extends RequestHandlerTest {
 
     private ApiRequest buildApiRequest(final Map<String, String> pathParameters, final Map<String, Object> queryStringParameters) {
         return new ApiRequest(HttpMethod.GET.name(), ApiHttpResource.SERVICE_USER_HISTORY.getValue(),
-            TestConstants.TEST_CONSENTS_HISTORY_PATH, pathParameters, queryStringParameters, null, false, null);
+            TestConstants.TEST_SERVICE_USER_HISTORY_PATH, pathParameters, queryStringParameters, null, false, null);
     }
 
     private void assertMissingPathParametersResponse(final Map<String, Object> response) {
