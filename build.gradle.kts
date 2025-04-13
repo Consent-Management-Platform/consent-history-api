@@ -46,7 +46,7 @@ dependencies {
     implementation("com.consentframework.consenthistory:consenthistory-api-models:0.2.0")
 
     // Common Consent Framework API Java libraries
-    implementation("com.consentframework:api-java-common:0.0.11")
+    implementation("com.consentframework:api-java-common:0.0.12")
 
     // Immutables
     val immutablesDependency = "org.immutables:value:2.10.1"
