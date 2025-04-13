@@ -1,10 +1,11 @@
 package com.consentframework.consenthistory.api.infrastructure.mappers;
 
-import com.consentframework.consenthistory.api.domain.entities.StoredConsent;
-import com.consentframework.consenthistory.api.infrastructure.entities.DynamoDbServiceUserConsentHistoryRecord;
 import com.consentframework.consenthistory.api.models.Consent;
 import com.consentframework.consenthistory.api.models.ConsentChangeEvent;
 import com.consentframework.consenthistory.api.models.ConsentEventType;
+import com.consentframework.consenthistory.api.models.ConsentStatus;
+import com.consentframework.shared.api.infrastructure.entities.DynamoDbConsentHistory;
+import com.consentframework.shared.api.infrastructure.entities.StoredConsentImage;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -19,7 +20,7 @@ public final class DynamoDbConsentChangeEventMapper {
      * @param record the DynamoDB record to convert.
      * @return the converted ConsentChangeEvent.
      */
-    public static ConsentChangeEvent toConsentChangeEvent(final DynamoDbServiceUserConsentHistoryRecord record) {
+    public static ConsentChangeEvent toConsentChangeEvent(final DynamoDbConsentHistory record) {
         if (record == null) {
             return null;
         }
@@ -32,7 +33,7 @@ public final class DynamoDbConsentChangeEventMapper {
             .newImage(toConsent(record.newImage()));
     }
 
-    private static Consent toConsent(final StoredConsent storedConsent) {
+    private static Consent toConsent(final StoredConsentImage storedConsent) {
         if (storedConsent == null) {
             return null;
         }
@@ -41,7 +42,7 @@ public final class DynamoDbConsentChangeEventMapper {
             .consentVersion(storedConsent.getConsentVersion())
             .userId(storedConsent.getUserId())
             .serviceId(storedConsent.getServiceId())
-            .status(storedConsent.getConsentStatus())
+            .status(ConsentStatus.fromValue(storedConsent.getConsentStatus()))
             .consentType(storedConsent.getConsentType())
             .consentData(storedConsent.getConsentData())
             .expiryTime(storedConsent.getExpiryTime());

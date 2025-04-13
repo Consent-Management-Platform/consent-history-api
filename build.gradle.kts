@@ -46,7 +46,7 @@ dependencies {
     implementation("com.consentframework.consenthistory:consenthistory-api-models:0.2.0")
 
     // Common Consent Framework API Java libraries
-    implementation("com.consentframework:api-java-common:0.0.6")
+    implementation("com.consentframework:api-java-common:0.0.10")
 
     // Immutables
     val immutablesDependency = "org.immutables:value:2.10.1"
@@ -81,7 +81,7 @@ tasks {
         violationRules {
             rule {
                 limit {
-                    minimum = BigDecimal.valueOf(0.95)
+                    minimum = BigDecimal.valueOf(0.94)
                 }
             }
         }

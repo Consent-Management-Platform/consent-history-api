@@ -1,9 +1,9 @@
 package com.consentframework.consenthistory.api.testcommon.constants;
 
 import com.consentframework.consenthistory.api.domain.constants.ApiPathParameterName;
-import com.consentframework.consenthistory.api.domain.entities.StoredConsent;
 import com.consentframework.consenthistory.api.models.Consent;
 import com.consentframework.consenthistory.api.models.ConsentStatus;
+import com.consentframework.shared.api.infrastructure.entities.StoredConsentImage;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.time.OffsetDateTime;
@@ -64,13 +64,13 @@ public final class TestConstants {
         .consentType(TEST_CONSENT_TYPE)
         .consentData(TEST_CONSENT_DATA);
 
-    public static final StoredConsent TEST_STORED_CONSENT = new StoredConsent()
+    public static final StoredConsentImage TEST_STORED_CONSENT = new StoredConsentImage()
         .id(TEST_PARTITION_KEY)
         .serviceId(TEST_SERVICE_ID)
         .userId(TEST_USER_ID)
         .consentId(TEST_CONSENT_ID)
         .consentVersion(1)
-        .consentStatus(TEST_CONSENT_STATUS)
+        .consentStatus(TEST_CONSENT_STATUS.getValue())
         .consentType(TEST_CONSENT_TYPE)
         .consentData(TEST_CONSENT_DATA);
 }

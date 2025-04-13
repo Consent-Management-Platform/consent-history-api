@@ -1,10 +1,10 @@
 package com.consentframework.consenthistory.api.testcommon.utils;
 
-import com.consentframework.consenthistory.api.domain.entities.StoredConsent;
-import com.consentframework.consenthistory.api.infrastructure.entities.DynamoDbServiceUserConsentHistoryRecord;
 import com.consentframework.consenthistory.api.models.ConsentEventType;
 import com.consentframework.consenthistory.api.models.ConsentStatus;
 import com.consentframework.consenthistory.api.testcommon.constants.TestConstants;
+import com.consentframework.shared.api.infrastructure.entities.DynamoDbConsentHistory;
+import com.consentframework.shared.api.infrastructure.entities.StoredConsentImage;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -12,13 +12,13 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Utility class for generating test DynamoDbServiceUserConsentHistoryRecord objects.
+ * Utility class for generating test DynamoDbConsentHistory objects.
  */
 public final class DynamoDbServiceUserConsentHistoryRecordGenerator {
     /**
-     * Generates a DynamoDbServiceUserConsentHistoryRecord with default values.
+     * Generates a DynamoDbConsentHistory with default values.
      */
-    public static DynamoDbServiceUserConsentHistoryRecord generate() {
+    public static DynamoDbConsentHistory generate() {
         return generate(
             generateDdbConsentImage("1"),
             generateDdbConsentImage("2"),
@@ -27,15 +27,15 @@ public final class DynamoDbServiceUserConsentHistoryRecordGenerator {
     }
 
     /**
-     * Generates a DynamoDbServiceUserConsentHistoryRecord with default values.
+     * Generates a DynamoDbConsentHistory with default values.
      *
      * @param oldImage old consent before change event
      * @param newImage new consent after change event
      * @param eventType type of change
      */
-    public static DynamoDbServiceUserConsentHistoryRecord generate(
-            final StoredConsent oldImage,
-            final StoredConsent newImage,
+    public static DynamoDbConsentHistory generate(
+            final StoredConsentImage oldImage,
+            final StoredConsentImage newImage,
             final ConsentEventType eventType) {
         return generate(
             oldImage,
@@ -46,19 +46,19 @@ public final class DynamoDbServiceUserConsentHistoryRecordGenerator {
     }
 
     /**
-     * Generates a DynamoDbServiceUserConsentHistoryRecord with default values.
+     * Generates a DynamoDbConsentHistory with default values.
      *
      * @param oldImage old consent before change event
      * @param newImage new consent after change event
      * @param eventType type of change
      * @param eventTime time of change event
      */
-    public static DynamoDbServiceUserConsentHistoryRecord generate(
-            final StoredConsent oldImage,
-            final StoredConsent newImage,
+    public static DynamoDbConsentHistory generate(
+            final StoredConsentImage oldImage,
+            final StoredConsentImage newImage,
             final ConsentEventType eventType,
             final OffsetDateTime eventTime) {
-        return DynamoDbServiceUserConsentHistoryRecord.builder()
+        return DynamoDbConsentHistory.builder()
             .id(TestConstants.TEST_PARTITION_KEY)
             .eventId(UUID.randomUUID().toString())
             .eventType(eventType.name())
@@ -74,7 +74,7 @@ public final class DynamoDbServiceUserConsentHistoryRecordGenerator {
      *
      * @param consentVersion version
      */
-    public static StoredConsent generateDdbConsentImage(final String consentVersion) {
+    public static StoredConsentImage generateDdbConsentImage(final String consentVersion) {
         return generateDdbConsentImage(consentVersion, TestConstants.TEST_CONSENT_DATA, TestConstants.TEST_EVENT_TIME);
     }
 
@@ -84,14 +84,14 @@ public final class DynamoDbServiceUserConsentHistoryRecordGenerator {
      * @param consentVersion version
      * @param consentData nested consent data
      */
-    public static StoredConsent generateDdbConsentImage(final String consentVersion,
+    public static StoredConsentImage generateDdbConsentImage(final String consentVersion,
             final Map<String, String> consentData, final String expiryTime) {
-        final StoredConsent consent = new StoredConsent()
+        final StoredConsentImage consent = new StoredConsentImage()
             .serviceId(TestConstants.TEST_SERVICE_ID)
             .userId(TestConstants.TEST_USER_ID)
             .consentId(TestConstants.TEST_CONSENT_ID)
             .consentVersion(Integer.valueOf(consentVersion))
-            .consentStatus(ConsentStatus.ACTIVE)
+            .consentStatus(ConsentStatus.ACTIVE.getValue())
             .consentType(TestConstants.TEST_CONSENT_TYPE)
             .consentData(consentData);
 

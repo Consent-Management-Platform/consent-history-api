@@ -7,9 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.consentframework.consenthistory.api.domain.entities.StoredConsent;
 import com.consentframework.consenthistory.api.domain.repositories.ServiceUserConsentHistoryRepository;
-import com.consentframework.consenthistory.api.infrastructure.entities.DynamoDbServiceUserConsentHistoryRecord;
 import com.consentframework.consenthistory.api.infrastructure.mappers.DynamoDbConsentChangeEventMapper;
 import com.consentframework.consenthistory.api.models.ConsentChangeEvent;
 import com.consentframework.consenthistory.api.models.ConsentEventType;
@@ -18,6 +16,8 @@ import com.consentframework.consenthistory.api.models.ConsentStatus;
 import com.consentframework.consenthistory.api.testcommon.constants.TestConstants;
 import com.consentframework.consenthistory.api.testcommon.utils.DynamoDbServiceUserConsentHistoryRecordGenerator;
 import com.consentframework.shared.api.domain.exceptions.ResourceNotFoundException;
+import com.consentframework.shared.api.infrastructure.entities.DynamoDbConsentHistory;
+import com.consentframework.shared.api.infrastructure.entities.StoredConsentImage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -36,35 +36,35 @@ import java.util.stream.Stream;
 
 class DynamoDbServiceUserConsentHistoryRepositoryTest {
     @Mock
-    private DynamoDbTable<DynamoDbServiceUserConsentHistoryRecord> consentHistoryTable;
+    private DynamoDbTable<DynamoDbConsentHistory> consentHistoryTable;
 
     @Mock
-    private PageIterable<DynamoDbServiceUserConsentHistoryRecord> queryResults;
+    private PageIterable<DynamoDbConsentHistory> queryResults;
 
-    final StoredConsent consentV1 = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage("1");
-    final StoredConsent consentV2 = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage("1");
-    final StoredConsent consentV3 = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage("1");
+    final StoredConsentImage consentV1 = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage("1");
+    final StoredConsentImage consentV2 = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage("1");
+    final StoredConsentImage consentV3 = DynamoDbServiceUserConsentHistoryRecordGenerator.generateDdbConsentImage("1");
 
-    final DynamoDbServiceUserConsentHistoryRecord record1 = DynamoDbServiceUserConsentHistoryRecordGenerator.generate(
+    final DynamoDbConsentHistory record1 = DynamoDbServiceUserConsentHistoryRecordGenerator.generate(
         null, consentV1, ConsentEventType.INSERT, OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC)
     );
-    final DynamoDbServiceUserConsentHistoryRecord record2 = DynamoDbServiceUserConsentHistoryRecordGenerator.generate(
+    final DynamoDbConsentHistory record2 = DynamoDbServiceUserConsentHistoryRecordGenerator.generate(
         consentV1, consentV2, ConsentEventType.MODIFY, OffsetDateTime.now().plusSeconds(1).withOffsetSameInstant(ZoneOffset.UTC)
     );
-    final DynamoDbServiceUserConsentHistoryRecord record3 = DynamoDbServiceUserConsentHistoryRecordGenerator.generate(
+    final DynamoDbConsentHistory record3 = DynamoDbServiceUserConsentHistoryRecordGenerator.generate(
         consentV2, consentV3, ConsentEventType.MODIFY, OffsetDateTime.now().plusSeconds(2).withOffsetSameInstant(ZoneOffset.UTC)
     );
-    final Page<DynamoDbServiceUserConsentHistoryRecord> page1 = Page.builder(DynamoDbServiceUserConsentHistoryRecord.class)
+    final Page<DynamoDbConsentHistory> page1 = Page.builder(DynamoDbConsentHistory.class)
         .items(List.of(record3, record1))
         .build();
-    final Page<DynamoDbServiceUserConsentHistoryRecord> page2 = Page.builder(DynamoDbServiceUserConsentHistoryRecord.class)
+    final Page<DynamoDbConsentHistory> page2 = Page.builder(DynamoDbConsentHistory.class)
         .items(List.of(record2))
         .build();
 
     @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
-        consentHistoryTable = (DynamoDbTable<DynamoDbServiceUserConsentHistoryRecord>) mock(DynamoDbTable.class);
+        consentHistoryTable = (DynamoDbTable<DynamoDbConsentHistory>) mock(DynamoDbTable.class);
         queryResults = mock(PageIterable.class);
         MockitoAnnotations.openMocks(this);
     }
@@ -101,8 +101,8 @@ class DynamoDbServiceUserConsentHistoryRepositoryTest {
     @Test
     void testGetServiceUserHistoryWhenNullResults() throws Exception {
         @SuppressWarnings("unchecked")
-        final DynamoDbIndex<DynamoDbServiceUserConsentHistoryRecord> index = mock(DynamoDbIndex.class);
-        when(consentHistoryTable.index(DynamoDbServiceUserConsentHistoryRecord.CONSENT_HISTORY_BY_SERVICE_USER_GSI_NAME)).thenReturn(index);
+        final DynamoDbIndex<DynamoDbConsentHistory> index = mock(DynamoDbIndex.class);
+        when(consentHistoryTable.index(DynamoDbConsentHistory.CONSENT_HISTORY_BY_SERVICE_USER_GSI_NAME)).thenReturn(index);
         when(index.query(any(QueryEnhancedRequest.class))).thenReturn(null);
         final DynamoDbServiceUserConsentHistoryRepository repository = new DynamoDbServiceUserConsentHistoryRepository(consentHistoryTable);
         validateServiceUserHistoryNotFoundResult(repository);
@@ -111,8 +111,8 @@ class DynamoDbServiceUserConsentHistoryRepositoryTest {
     @Test
     void testGetServiceUserHistoryWhenEmptyResults() throws Exception {
         @SuppressWarnings("unchecked")
-        final DynamoDbIndex<DynamoDbServiceUserConsentHistoryRecord> index = mock(DynamoDbIndex.class);
-        when(consentHistoryTable.index(DynamoDbServiceUserConsentHistoryRecord.CONSENT_HISTORY_BY_SERVICE_USER_GSI_NAME)).thenReturn(index);
+        final DynamoDbIndex<DynamoDbConsentHistory> index = mock(DynamoDbIndex.class);
+        when(consentHistoryTable.index(DynamoDbConsentHistory.CONSENT_HISTORY_BY_SERVICE_USER_GSI_NAME)).thenReturn(index);
         when(index.query(any(QueryEnhancedRequest.class))).thenReturn(queryResults);
         when(queryResults.stream()).thenReturn(Stream.empty());
         final DynamoDbServiceUserConsentHistoryRepository repository = new DynamoDbServiceUserConsentHistoryRepository(consentHistoryTable);
@@ -121,14 +121,14 @@ class DynamoDbServiceUserConsentHistoryRepositoryTest {
 
     @Test
     void testGetServiceUserHistoryWhenHaveResults() throws Exception {
-        final StoredConsent consentWithDistinctId = new StoredConsent()
+        final StoredConsentImage consentWithDistinctId = new StoredConsentImage()
             .serviceId(TestConstants.TEST_SERVICE_ID)
             .userId(TestConstants.TEST_USER_ID)
             .consentId(TestConstants.TEST_CONSENT_ID_2)
             .consentVersion(1)
-            .consentStatus(ConsentStatus.ACTIVE)
+            .consentStatus(ConsentStatus.ACTIVE.getValue())
             .consentType(TestConstants.TEST_CONSENT_TYPE);
-        final DynamoDbServiceUserConsentHistoryRecord historyRecordForDistinctConsent = DynamoDbServiceUserConsentHistoryRecord.builder()
+        final DynamoDbConsentHistory historyRecordForDistinctConsent = DynamoDbConsentHistory.builder()
             .id(TestConstants.TEST_PARTITION_KEY_2)
             .eventId(UUID.randomUUID().toString())
             .eventType(ConsentEventType.INSERT.name())
@@ -137,16 +137,16 @@ class DynamoDbServiceUserConsentHistoryRepositoryTest {
             .oldImage(null)
             .newImage(consentWithDistinctId)
             .build();
-        final Page<DynamoDbServiceUserConsentHistoryRecord> pageForDistinctConsent =
-            Page.builder(DynamoDbServiceUserConsentHistoryRecord.class)
+        final Page<DynamoDbConsentHistory> pageForDistinctConsent =
+            Page.builder(DynamoDbConsentHistory.class)
                 .items(List.of(historyRecordForDistinctConsent))
                 .build();
 
         when(queryResults.stream()).thenReturn(List.of(page2, pageForDistinctConsent, page1).stream());
 
         @SuppressWarnings("unchecked")
-        final DynamoDbIndex<DynamoDbServiceUserConsentHistoryRecord> index = mock(DynamoDbIndex.class);
-        when(consentHistoryTable.index(DynamoDbServiceUserConsentHistoryRecord.CONSENT_HISTORY_BY_SERVICE_USER_GSI_NAME)).thenReturn(index);
+        final DynamoDbIndex<DynamoDbConsentHistory> index = mock(DynamoDbIndex.class);
+        when(consentHistoryTable.index(DynamoDbConsentHistory.CONSENT_HISTORY_BY_SERVICE_USER_GSI_NAME)).thenReturn(index);
         when(index.query(any(QueryEnhancedRequest.class))).thenReturn(queryResults);
 
         final DynamoDbServiceUserConsentHistoryRepository repository = new DynamoDbServiceUserConsentHistoryRepository(consentHistoryTable);

@@ -4,7 +4,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.consentframework.consenthistory.api.domain.constants.ApiHttpResource;
 import com.consentframework.consenthistory.api.domain.repositories.ServiceUserConsentHistoryRepository;
-import com.consentframework.consenthistory.api.infrastructure.entities.DynamoDbServiceUserConsentHistoryRecord;
 import com.consentframework.consenthistory.api.infrastructure.repositories.DynamoDbServiceUserConsentHistoryRepository;
 import com.consentframework.consenthistory.api.usecases.activities.GetHistoryForServiceUserActivity;
 import com.consentframework.consenthistory.api.usecases.activities.GetHistoryForServiceUserConsentActivity;
@@ -15,6 +14,7 @@ import com.consentframework.shared.api.domain.constants.HttpMethod;
 import com.consentframework.shared.api.domain.constants.HttpStatusCode;
 import com.consentframework.shared.api.domain.entities.ApiRequest;
 import com.consentframework.shared.api.domain.requesthandlers.ApiRequestHandler;
+import com.consentframework.shared.api.infrastructure.entities.DynamoDbConsentHistory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
@@ -38,9 +38,9 @@ public class ConsentHistoryApiService implements RequestHandler<ApiRequest, Map<
      */
     public ConsentHistoryApiService() {
         final DynamoDbEnhancedClient dynamoDbEnhancedClient = DynamoDbEnhancedClient.create();
-        final DynamoDbTable<DynamoDbServiceUserConsentHistoryRecord> dynamoDbTable = dynamoDbEnhancedClient.table(
-            DynamoDbServiceUserConsentHistoryRecord.TABLE_NAME,
-            TableSchema.fromImmutableClass(DynamoDbServiceUserConsentHistoryRecord.class));
+        final DynamoDbTable<DynamoDbConsentHistory> dynamoDbTable = dynamoDbEnhancedClient.table(
+            DynamoDbConsentHistory.TABLE_NAME,
+            TableSchema.fromImmutableClass(DynamoDbConsentHistory.class));
         this.consentHistoryRepository = new DynamoDbServiceUserConsentHistoryRepository(dynamoDbTable);
     }
 

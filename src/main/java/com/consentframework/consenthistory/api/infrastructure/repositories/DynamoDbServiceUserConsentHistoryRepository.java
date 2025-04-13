@@ -1,11 +1,11 @@
 package com.consentframework.consenthistory.api.infrastructure.repositories;
 
 import com.consentframework.consenthistory.api.domain.repositories.ServiceUserConsentHistoryRepository;
-import com.consentframework.consenthistory.api.infrastructure.entities.DynamoDbServiceUserConsentHistoryRecord;
 import com.consentframework.consenthistory.api.infrastructure.mappers.DynamoDbConsentChangeEventMapper;
 import com.consentframework.consenthistory.api.models.ConsentChangeEvent;
 import com.consentframework.consenthistory.api.models.ConsentHistory;
 import com.consentframework.shared.api.domain.exceptions.ResourceNotFoundException;
+import com.consentframework.shared.api.infrastructure.entities.DynamoDbConsentHistory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.amazon.awssdk.core.pagination.sync.SdkIterable;
@@ -30,14 +30,14 @@ import java.util.stream.Stream;
 public class DynamoDbServiceUserConsentHistoryRepository implements ServiceUserConsentHistoryRepository {
     private static final Logger logger = LogManager.getLogger(DynamoDbServiceUserConsentHistoryRepository.class);
 
-    private final DynamoDbTable<DynamoDbServiceUserConsentHistoryRecord> consentHistoryTable;
+    private final DynamoDbTable<DynamoDbConsentHistory> consentHistoryTable;
 
     /**
      * Construct the DynamoDB consent history repository.
      *
      * @param consentHistoryTable DynamoDB table storing consent history records.
      */
-    public DynamoDbServiceUserConsentHistoryRepository(final DynamoDbTable<DynamoDbServiceUserConsentHistoryRecord> consentHistoryTable) {
+    public DynamoDbServiceUserConsentHistoryRepository(final DynamoDbTable<DynamoDbConsentHistory> consentHistoryTable) {
         this.consentHistoryTable = consentHistoryTable;
     }
 
@@ -53,7 +53,7 @@ public class DynamoDbServiceUserConsentHistoryRepository implements ServiceUserC
     public List<ConsentChangeEvent> getConsentHistory(final String serviceId, final String userId, final String consentId)
             throws ResourceNotFoundException {
         final QueryEnhancedRequest queryRequest = buildGetConsentHistoryQueryRequest(serviceId, userId, consentId);
-        final PageIterable<DynamoDbServiceUserConsentHistoryRecord> queryResults = consentHistoryTable.query(queryRequest);
+        final PageIterable<DynamoDbConsentHistory> queryResults = consentHistoryTable.query(queryRequest);
         if (queryResults == null) {
             throwNotFoundError(serviceId, userId, consentId);
         }
@@ -75,8 +75,8 @@ public class DynamoDbServiceUserConsentHistoryRepository implements ServiceUserC
     @Override
     public List<ConsentHistory> getServiceUserHistory(final String serviceId, final String userId) throws ResourceNotFoundException {
         final QueryEnhancedRequest queryRequest = buildGetConsentHistoryByServiceUserQueryRequest(serviceId, userId);
-        final SdkIterable<Page<DynamoDbServiceUserConsentHistoryRecord>> queryResults = consentHistoryTable
-            .index(DynamoDbServiceUserConsentHistoryRecord.CONSENT_HISTORY_BY_SERVICE_USER_GSI_NAME)
+        final SdkIterable<Page<DynamoDbConsentHistory>> queryResults = consentHistoryTable
+            .index(DynamoDbConsentHistory.CONSENT_HISTORY_BY_SERVICE_USER_GSI_NAME)
             .query(queryRequest);
 
         final Map<String, List<ConsentChangeEvent>> consentHistoryByConsentId = parseConsentIdsToChangeEvents(
@@ -103,7 +103,7 @@ public class DynamoDbServiceUserConsentHistoryRepository implements ServiceUserC
      * @throws ResourceNotFoundException if no history was found for the given service user
      */
     private Map<String, List<ConsentChangeEvent>> parseConsentIdsToChangeEvents(final String serviceId, final String userId,
-            final SdkIterable<Page<DynamoDbServiceUserConsentHistoryRecord>> queryResults) throws ResourceNotFoundException {
+            final SdkIterable<Page<DynamoDbConsentHistory>> queryResults) throws ResourceNotFoundException {
         if (queryResults == null) {
             throwNotFoundError(serviceId, userId);
         }
@@ -134,7 +134,7 @@ public class DynamoDbServiceUserConsentHistoryRepository implements ServiceUserC
      * @return Stream of consent change events
      */
     private Stream<ConsentChangeEvent> parseConsentHistoryRecords(
-            final SdkIterable<Page<DynamoDbServiceUserConsentHistoryRecord>> queryResults) {
+            final SdkIterable<Page<DynamoDbConsentHistory>> queryResults) {
         return queryResults.stream()
             .flatMap(page -> page.items().stream())
             .map(DynamoDbConsentChangeEventMapper::toConsentChangeEvent)
